@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product['Name'] }} - HD Ecommerce Recommendation System</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <a class="navbar-brand" href="{{ url_for('index') }}"><i class="fas fa-home"></i> Home</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('cart') }}"><i class="fas fa-shopping-cart"></i> Cart</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6">
+                <img src="{{ product['ImageURL'] }}" class="img-fluid" alt="{{ product['Name'] }}">
+            </div>
+            <div class="col-md-6">
+                <h1>{{ product['Name'] }}</h1>
+                <p><strong>Brand:</strong> {{ product['Brand'] }}</p>
+                <p><strong>Rating:</strong> {{ product['Rating'] }}</p>
+                <p><strong>Review Count:</strong> {{ product['ReviewCount'] }}</p>
+                <p><strong>Description:</strong></p>
+                <p>{{ product['Description'] }}</p>
+                <p><strong>Price:</strong> ${{ product['Price'] }}</p>
+                <a href="#" class="btn btn-primary" onclick="addToCart({{ product['ID'] }})">Add to Cart</a>
+                <a href="#" class="btn btn-primary">Buy Now</a>
+
+                <script>
+                    function addToCart(productId) {
+                        fetch('{{ url_for('add_to_cart') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ product_id: productId })
+                        }).then(response => response.json())
+                        .then(data => {
+                            alert(data.message);
+                        });
+                    }
+                </script>
+
+            </div>
+        </div>
+        <div class="mt-5">
+            <h2>Similar Products</h2>
+            <div class="row mt-4">
+                {% for index, similar_product in similar_products.iterrows() %}
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                    <div class="card">
+                        <img src="{{ similar_product['ImageURL'] }}" class="card-img-top" alt="{{ similar_product['Name'] }}" style="height: 200px;">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ truncate(similar_product['Name'], 17) }}</h5>
+                            <p class="card-text">Brand: {{ similar_product['Brand'] }}</p>
+                            <p class="card-text">Rating: {{ similar_product['Rating'] }}</p>
+                            <a href="{{ url_for('product_detail', product_id=similar_product.name) }}" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <a href="javascript:history.back()" class="btn btn-secondary mt-3">Go Back</a>
+    </div>
+</body>
+</html>

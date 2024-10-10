@@ -1,0 +1,17 @@
+
+# .gitignore
+.vscode/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+*.env
+*.venv
+E-Commerece-Recommendation-System/
+templates/trail.html

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - HD Ecommerce Recommendation System</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .small-card {
+            display: flex;
+            flex-direction: row;
+            margin-bottom: 10px;
+        }
+        .small-card img {
+            max-width: 100px; /* Fixed width for the image box */
+            height: auto; /* Allow the image to adjust its height */
+            margin-right: 10px;
+        }
+        .small-card .card-text {
+            flex: 1; /* Take remaining space */
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <a class="navbar-brand" href="{{ url_for('index') }}"><i class="fas fa-home"></i> Home</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('cart') }}"><i class="fas fa-shopping-cart"></i> Cart</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container mt-5">
+        <h1>Your Cart</h1>
+        <div class="row">
+            <div class="col-md-8">
+                {% for index, product in cart_products.iterrows() %}
+                <div class="card mb-3">
+                    <div class="row no-gutters">
+                        <div class="col-md-4">
+                            <img src="{{ product['ImageURL'] }}" class="card-img" alt="{{ product['Name'] }}">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ product['Name'] }}</h5>
+                                <p class="card-text">Price: ${{ product['Price'] }}</p>
+                                <form action="{{ url_for('remove_from_cart', product_id=product.name) }}" method="post">
+                                    <button type="submit" class="btn btn-danger">Remove</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                <h3>Total Price: ${{ total_price }}</h3>
+            </div>
+            <div class="col-md-4">
+                <h2>Recommended Products</h2>
+                <div class="mt-4">
+                    {% for recs in recommendations %}
+                    {% for index, rec in recs.iterrows() %}
+                    <div class="small-card">
+                        <img src="{{ rec['ImageURL'] }}" class="card-img-top" alt="{{ rec['Name'] }}">
+                        <div class="card-body">
+                            <h6 class="card-title">{{ truncate(rec['Name'], 17) }}</h6>
+                            <p class="card-text">Brand: {{ rec['Brand'] }}</p>
+                            <p class="card-text">Rating: {{ rec['Rating'] }}</p>
+                            <a href="{{ url_for('product_detail', product_id=rec.name) }}" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <a href="javascript:history.back()" class="btn btn-secondary mt-3">Go Back</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HD Ecommerce Recommendation System</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />  
+    <!-- link static/css/style.css -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light">      
+      <a class="navbar-brand" href="#"><i class="fas fa-home"></i> Home</a>
+      <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+          <div class="search-bar mx-auto">
+              <input
+              type="text"
+              class="form-control"
+              id="searchInput"
+              placeholder="Search products..."
+              />
+              <button class="btn btn-primary" onclick="searchProducts()">
+              <i class="fas fa-search"></i>
+              </button>
+          </div>
+      </div>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+          <ul class="navbar-nav">
+              <!-- Cart Link -->
+              <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('cart') }}">
+                      <i class="fas fa-shopping-cart"></i> Cart
+                  </a>
+              </li>
+              <!-- Sign Up -->
+              <li class="nav-item">
+                  <a
+                  class="nav-link btn btn-outline-danger mr-2"
+                  href="#"
+                  data-toggle="modal"
+                  data-target="#signupModal"
+                  >Sign Up</a
+                  >
+              </li>
+              <!-- Sign In -->
+              <li class="nav-item">
+                  <a
+                  class="nav-link btn btn-danger"
+                  href="#"
+                  data-toggle="modal"
+                  data-target="#signinModal"
+                  >Sign In</a
+                  >
+              </li>
+          </ul>
+      </div>
+    </nav>
+
+    <!-- Bootstrap modal for sign up -->
+    <div
+      class="modal fade"
+      id="signupModal"
+      tabindex="-1"
+      aria-labelledby="signupModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="signupModalLabel">Sign Up</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form action="/signup" method="post">
+              <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="username"
+                  name="username"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+                required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input
+                type="password"
+                class="form-control"
+                id="password"
+                name="password"
+                required
+                />
+              </div>
+              <button type="submit" class="btn btn-primary">Sign Up</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap modal for sign in -->
+    <div
+      class="modal fade"
+      id="signinModal"
+      tabindex="-1"
+      aria-labelledby="signinModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="signinModalLabel">Sign In</h5>
+            <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form action="/signin" method="post">
+              <div class="mb-3">
+                <label for="signinUsername" class="form-label">Username</label>
+                <input
+                  type="text"
+                  class="form-control" 
+                  id="signinUsername" 
+                  name="signinUsername" 
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="signinPassword" class="form-label">Password</label>
+                <input 
+                  type="password" 
+                  class="form-control" 
+                  id="signinPassword" 
+                  name="signinPassword" 
+                  required
+                  />
+              </div>
+              <button type="submit" class="btn btn-primary">Sign In</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trending Products Section -->
+    <div class="container mt-5">
+      <h2 class="trending-products-title">Trending Products</h2>
+      <div class="row mt-4" id="productList">
+          {% for index, product in trending_products.iterrows() %}
+          <div class="col-lg-3 col-md-4 col-sm-6 mb-4 product-card">
+              <div class="card">
+                  <a href="{{ url_for('product_detail', product_id=product.name) }}">
+                      <img src="{{ product['ImageURL'] }}" class="card-img-top" alt="{{ product['Name'] }}" style="height: 200px;">
+                  </a>
+                  <div class="card-body">
+                      <h5 class="card-title">{{ truncate(product['Name'], 17) }}</h5>
+                      <p class="card-text">Brand: {{ product['Brand'] }}</p>
+                      <p class="card-text">Rating: {{ product['Rating'] }}</p>
+                  </div>
+              </div>
+          </div>
+          {% endfor %}
+      </div>
+    </div>
+  
+    <!-- Similar changes for the Recommended Products section -->
+    <div class="container mt-5">
+        <h2 class="trending-products-title">Recommended Products</h2>
+        <div class="row mt-4" id="productList">
+            {% for index, product in cf_recommendations.iterrows() %}
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4 product-card">
+                <div class="card">
+                    <a href="{{ url_for('product_detail', product_id=product.name) }}">
+                        <img src="{{ product['ImageURL'] }}" class="card-img-top" alt="{{ product['Name'] }}" style="height: 200px;">
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ truncate(product['Name'], 17) }}</h5>
+                        <p class="card-text">Brand: {{ product['Brand'] }}</p>
+                        <p class="card-text">Rating: {{ product['Rating'] }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+  
+
+    <!-- View More Button -->
+    <div class="container mt-5">
+      <div class="text-center">
+        <a href="{{ url_for('all_products') }}" class="btn btn-primary btn-lg">View More Products</a>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="container mt-5">
+      <hr />
+      <p class="text-center">
+        &copy; 2024 HD Ecommerce Recommendation System
+      </p>
+    </footer>
+
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+      function searchProducts() {
+        var input = document.getElementById('searchInput').value.toLowerCase();
+        window.location.href = "/all-products?search=" + input;
+      }
+    
+      function showProductModal(index) {
+        $('#productModal' + index).modal('show');
+      }
+    </script>
+  </body>
+</html>
